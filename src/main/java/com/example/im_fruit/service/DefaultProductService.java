@@ -11,7 +11,7 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 
 @Service
-public class DefaultProductService {
+public class DefaultProductService implements ProductService{
 
     private final ProductRepository productRepository;
 
