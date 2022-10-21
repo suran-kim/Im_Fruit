@@ -31,7 +31,7 @@ public class ProductJdbcRepository implements ProductRepository {
     @Override
     public Product insert(Product product) {
         var update = jdbcTemplate.update("INSERT INTO products(product_id, product_name, category, price, description, created_at, updated_at)" +
-                "VALUES (UNHEX(REPALCE(:productId, '-', ''))), :productName, :category, :price, :description, :createdAt, :updatedAt)", toParamMap(product));
+                "VALUES (UNHEX(REPLACE(:productId, '-', ''))), :productName, :category, :price, :description, :createdAt, :updatedAt)", toParamMap(product));
         if (update != 1) {
             throw new RuntimeException("Noting was inserted");
         }
@@ -40,7 +40,15 @@ public class ProductJdbcRepository implements ProductRepository {
 
     @Override
     public Product update(Product product) {
-        return null;
+        var update = jdbcTemplate.update(
+                "UPDATE products SET product_name = :productName, category = :category, price = :price, description = :description, created_at = :createdAt, updated_at = :updatedAt" +
+                        " WHERE product_id = UUID_TO_BIN(:productId)",
+                toParamMap(product)
+        );
+        if (update != 1) {
+            throw new RuntimeException("Nothing was updated");
+        }
+        return product;
     }
 
     @Override
@@ -78,7 +86,7 @@ public class ProductJdbcRepository implements ProductRepository {
 
     @Override
     public void deleteAll() {
-
+        jdbcTemplate.update("DELETE FROM products", Collections.emptyMap());
     }
 
     private static final RowMapper<Product> productRowMapper = (resultSet, i) -> {
