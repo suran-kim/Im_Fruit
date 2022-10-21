@@ -31,7 +31,7 @@ public class ProductJdbcRepository implements ProductRepository {
     @Override
     public Product insert(Product product) {
         var update = jdbcTemplate.update("INSERT INTO products(product_id, product_name, category, price, description, created_at, updated_at)" +
-                "VALUES(UNHEX(REPALCE((:productId, '-', '')))), :productName, :category, :price, :description, :createdAt, :updatedAt)", toParamMap(product));
+                "VALUES (UNHEX(REPALCE(:productId, '-', ''))), :productName, :category, :price, :description, :createdAt, :updatedAt)", toParamMap(product));
         if (update != 1) {
             throw new RuntimeException("Noting was inserted");
         }
